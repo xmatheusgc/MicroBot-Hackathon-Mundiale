@@ -6,7 +6,7 @@ export default function NavBar({theme, toggleTheme}) {
     <nav className='flex justify-between'>
       <div>
         <h1 className='font-bold text-4xl'>MicroBot</h1>
-        <p className='text-xs'>by LLMakers</p>
+        <p className='text-xs'>by <a href="" className='text-purple'>LLMakers</a></p>
       </div>
       <div className='flex'>
         <label className="inline-flex items-center mb-5 cursor-pointer">
