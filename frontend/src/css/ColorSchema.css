@@ -1,0 +1,43 @@
+html.light {
+  --color-bg: #F6F6F8;
+  --color-surface: #FFFFFF;
+  --color-text: #3C3C40;
+  --color-text-secondary: #898D95;
+  --color-text-white: #FFFFFF;
+  --color-input: #d0d3d8;
+  --color-purple: #737FEB;
+  --color-red: #FF7684;
+  --color-green: #49EAB8;
+}
+
+html.dark {
+  --color-bg: #181A1E;
+  --color-surface: #202328;
+  --color-text: #F3FAFF;
+  --color-text-secondary: #898D95;
+  --color-text-white: #FFFFFF;
+  --color-input: #46484d;
+  --color-purple: #737FEB;
+  --color-red: #FF7684;
+  --color-green: #49EAB8;
+}
+
+.bg-color { background-color: var(--color-bg); }
+.bg-surface { background-color: var(--color-surface); }
+.bg-purple { background-color: var(--color-purple); }
+.bg-red { background-color: var(--color-red); }
+.bg-green { background-color: var(--color-green); }
+
+.text-color { color: var(--color-text); }
+.text-color-secondary { color: var(--color-text-secondary); }
+.text-color-white { color: var(--color-text-white); }
+.text-purple { color: var(--color-purple); }
+.text-red { color: var(--color-red); }
+.text-green { color: var(--color-green); }
+
+.border-color { border-color: var(--color-surface); }
+.border-purple { border-color: var(--color-purple); }
+.border-red { border-color: var(--color-red); }
+.border-green { border-color: var(--color-green); }
+
+.input-color { background-color: var(--color-input); }

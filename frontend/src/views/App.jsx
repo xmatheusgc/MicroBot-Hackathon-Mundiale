@@ -15,7 +15,7 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.classList.remove('light', 'dark')
-    document.documentElement.classList.add('theme')
+    document.documentElement.classList.add(theme)
 
     localStorage.setItem('theme', theme)
   }, [theme])
@@ -25,11 +25,11 @@ export default function App() {
   };
 
   return (
-    <main className='flex flex-col w-full h-full p-4 gap-3'>
-      <NavBar/>
-      <div className='flex w-full h-full gap-3'>
-        <ChatWindow/>
-        <MicroBotPanel/>
+    <main className='flex flex-col w-full h-full px-8 py-6 gap-3'>
+      <NavBar theme={theme} toggleTheme={toggleTheme} />
+      <div className='flex w-full h-full gap-6'>
+        <ChatWindow />
+        <MicroBotPanel />
       </div>
     </main>
   );
