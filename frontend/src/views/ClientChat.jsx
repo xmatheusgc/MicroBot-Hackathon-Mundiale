@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Paperclip, Mic, Bot } from "lucide-react";
-import "../css/App.css";
-import "../css/ClientChat.css";
+import "./App.css";
+import "./ClientChat.css";
 
 export default function ClientChat() {
   const [message, setMessage] = useState("");
