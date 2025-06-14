@@ -1,7 +1,9 @@
+import { Routes, Route } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import ChatWindow from '../components/ChatWindow.jsx'
-import MicroBotPanel from '../components/MicroBotPanel.jsx'
+
 import NavBar from '../components/NavBar.jsx'
+import Home from './public/Home.jsx'
+import Dashboard from './admin/Dashboard.jsx'
 
 export default function App() {
   const [theme, setTheme] = useState(() => {
@@ -25,12 +27,12 @@ export default function App() {
   };
 
   return (
-    <main className='flex flex-col w-full h-full px-8 py-6 gap-3'>
+    <main className='flex flex-col h-full'>
       <NavBar theme={theme} toggleTheme={toggleTheme} />
-      <div className='flex w-full h-full gap-6'>
-        <ChatWindow />
-        <MicroBotPanel />
-      </div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/Dashboard" element={<Dashboard />} />
+      </Routes>
     </main>
   );
 }
