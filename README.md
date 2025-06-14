@@ -26,6 +26,7 @@ Interface de chat simples com as funções implementadas em versão básica, dem
 
 ## 🧰 Tecnologias
 
+- Python
 - React
 - Node.js
 - Tailwind CSS
