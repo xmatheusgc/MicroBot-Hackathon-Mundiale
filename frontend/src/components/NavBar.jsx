@@ -3,10 +3,10 @@ import { useState } from 'react';
 export default function NavBar({theme, toggleTheme}) {
 
   return (
-    <nav className='flex justify-between'>
+    <nav className='flex justify-between mx-8 mt-6'>
       <div>
         <h1 className='font-bold text-4xl'>MicroBot</h1>
-        <p className='text-xs'>by LLMakers</p>
+        <p className='text-xs'>by <a href="" className='text-purple'>LLMakers</a></p>
       </div>
       <div className='flex'>
         <label className="inline-flex items-center mb-5 cursor-pointer">

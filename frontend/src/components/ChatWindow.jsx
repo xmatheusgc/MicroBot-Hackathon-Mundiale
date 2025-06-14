@@ -10,7 +10,6 @@ export default function ChatWindow() {
             </div>
             <div className='messages-container flex flex-col p-4 h-full'>
                 <span className='border rounded-xl px-12 py-1'>Message 1</span>
-                <span className='border rounded-xl px-12 py-1'>Message 2</span>
             </div>
             <div className='flex chat-tools gap-2 justify-center p-2'>
                 <input className='rounded-xl px-4 py-2 grow-3 input-color' type="text" placeholder='Message'/>
