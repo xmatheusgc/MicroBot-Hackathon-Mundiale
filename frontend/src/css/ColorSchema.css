@@ -4,7 +4,7 @@ html.light {
   --color-text: #3C3C40;
   --color-text-secondary: #898D95;
   --color-text-white: #FFFFFF;
-  --color-input: #d0d3d8;
+  --color-input: #eaedf2;
   --color-purple: #737FEB;
   --color-red: #FF7684;
   --color-green: #49EAB8;
@@ -16,7 +16,7 @@ html.dark {
   --color-text: #F3FAFF;
   --color-text-secondary: #898D95;
   --color-text-white: #FFFFFF;
-  --color-input: #46484d;
+  --color-input: #25272b;
   --color-purple: #737FEB;
   --color-red: #FF7684;
   --color-green: #49EAB8;
