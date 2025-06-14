@@ -4,7 +4,8 @@ html.light {
   --color-text: #3C3C40;
   --color-text-secondary: #898D95;
   --color-text-white: #FFFFFF;
-  --color-input: #eaedf2;
+  --color-input: #EAEDF2;
+  --border-color: #f0f0f0;
   --color-purple: #737FEB;
   --color-red: #FF7684;
   --color-green: #49EAB8;
@@ -17,6 +18,7 @@ html.dark {
   --color-text-secondary: #898D95;
   --color-text-white: #FFFFFF;
   --color-input: #25272b;
+  --border-color: #313338;
   --color-purple: #737FEB;
   --color-red: #FF7684;
   --color-green: #49EAB8;
@@ -41,3 +43,4 @@ html.dark {
 .border-green { border-color: var(--color-green); }
 
 .input-color { background-color: var(--color-input); }
+.border-color { border-color: var(--border-color);}
