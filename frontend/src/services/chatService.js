@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
+import { useWebSocket } from './useWebSocket';
+import { authFetch } from './authFetch';
 
 export function chatService(activeChatId) {
   const [message, setMessage] = useState('');
@@ -10,28 +12,34 @@ export function chatService(activeChatId) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Busca o histórico do chat
+  const fetchHistory = async () => {
+    if (!activeChatId) return;
+    try {
+      const res = await authFetch(`http://127.0.0.1:8000/history?chatId=${activeChatId}`);
+      const data = await res.json();
+      setHistory(data.history || []);
+    } catch (err) {
+      console.error("Erro ao carregar histórico:", err);
+    }
+  };
+
   useEffect(() => {
     scrollToBottom();
   }, [history]);
 
   useEffect(() => {
     if (!activeChatId) return;
-
-    async function fetchHistory() {
-      try {
-        const res = await fetch(`http://127.0.0.1:8000/history?chatId=${activeChatId}`);
-        const data = await res.json();
-        setHistory(data.history || []);
-      } catch (err) {
-        console.error("Erro ao carregar histórico:", err);
-      }
-    }
     fetchHistory();
-
-    // Adicione este bloco para polling:
-    const interval = setInterval(fetchHistory, 2000);
-    return () => clearInterval(interval);
+    // Removido o setInterval (polling)
   }, [activeChatId]);
+
+  // Atualiza histórico em tempo real via WebSocket
+  useWebSocket((data) => {
+    if (data.type === "new_message" && data.chatId === activeChatId) {
+      fetchHistory();
+    }
+  });
 
   const handleSend = async () => {
     if (!message.trim() || !activeChatId) return;
@@ -74,5 +82,6 @@ export function chatService(activeChatId) {
     loading,
     handleSend,
     messagesEndRef,
+    fetchHistory, // exporta para uso externo (AdminChatComponent)
   };
 }

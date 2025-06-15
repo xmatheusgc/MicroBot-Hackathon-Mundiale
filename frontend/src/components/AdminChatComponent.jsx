@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { chatService } from '../services/chatService';
 import { Paperclip, Bot } from "lucide-react";
+import { useWebSocket } from "../services/useWebSocket";
 
 export default function AdminChatComponent({ activeChatId }) {
   const [iaOn, setIaOn] = useState(true);
@@ -12,9 +13,9 @@ export default function AdminChatComponent({ activeChatId }) {
     loading,
     handleSend,
     messagesEndRef,
+    fetchHistory, // adicione aqui
   } = chatService(activeChatId);
 
-  // Buscar status da IA ao trocar de chat
   useEffect(() => {
     if (!activeChatId) return;
     fetch(`http://127.0.0.1:8000/get-ia-status?chatId=${activeChatId}`)
@@ -22,7 +23,6 @@ export default function AdminChatComponent({ activeChatId }) {
       .then(data => setIaOn(data.iaOn));
   }, [activeChatId]);
 
-  // Alterar status da IA
   const toggleIa = async () => {
     if (!activeChatId) return;
     const novoStatus = !iaOn;
@@ -34,7 +34,6 @@ export default function AdminChatComponent({ activeChatId }) {
     });
   };
 
-  // Novo handleSend que respeita o estado da IA
   const handleSendWithIaToggle = async () => {
     if (!message.trim() || loading) return;
 
@@ -65,8 +64,14 @@ export default function AdminChatComponent({ activeChatId }) {
     }
   };
 
+  useWebSocket((data) => {
+    if (data.type === "new_message" && data.chatId === activeChatId) {
+      fetchHistory(); 
+    }
+  });
+
   return (
-    <section className="flex flex-col justify-between grow-1 rounded-3xl bg-surface shadow-2xl px-4 py-2 h-full max-w-1/3">
+    <section className="flex flex-col justify-between grow-1 rounded-3xl bg-surface shadow-2xl px-4 py-2 h-full max-w-1/3 min-w-[420px]">
       <div className="flex justify-end mb-4">
         <button
           onClick={toggleIa}
@@ -110,7 +115,7 @@ export default function AdminChatComponent({ activeChatId }) {
               </div>
             );
           }
-          // Mensagens do cliente
+
           return (
             <div key={index} className="flex justify-end">
               <div className="my-2 p-3 rounded-xl max-w-[70%] break-words shadow-lg bg-purple text-white max-w-1/2">

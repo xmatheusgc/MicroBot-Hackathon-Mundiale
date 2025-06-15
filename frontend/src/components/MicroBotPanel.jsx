@@ -1,29 +1,30 @@
 import { useEffect, useState } from "react";
+import { useWebSocket } from "../services/useWebSocket";
+import { authFetch } from '../services/authFetch';
 
 export default function MicroBotPanel({ activeChatId, setActiveChatId }) {
   const [chats, setChats] = useState([]);
 
+  const fetchChats = () => {
+    fetch("http://127.0.0.1:8000/chats")
+      .then(res => res.json())
+      .then(data => {
+        setChats(data.chats.map(id => ({ id, title: id })));
+      });
+  };
+
   useEffect(() => {
-    // Função para buscar chats
-    const fetchChats = () => {
-      fetch("http://127.0.0.1:8000/chats")
-        .then(res => res.json())
-        .then(data => {
-          setChats(data.chats.map(id => ({ id, title: id })));
-        });
-    };
-
-    fetchChats(); // Busca inicial
-
-    // Atualiza a cada 5 segundos
-    const interval = setInterval(fetchChats, 5000);
-
-    // Limpa o intervalo ao desmontar
-    return () => clearInterval(interval);
+    fetchChats();
   }, []);
 
+  useWebSocket((data) => {
+    if (data.type === "new_chat") {
+      fetchChats();
+    }
+  });
+
   return (
-    <section className='flex flex-col justify-between grow-4 rounded-3xl bg-surface shadow-2xl px-4 py-2 h-full'>
+    <section className='flex flex-col justify-between grow-4 rounded-3xl bg-surface shadow-2xl px-4 py-6 h-full'>
       {chats.length === 0 && (
         <div className="text-gray-500">Nenhum chat ativo.</div>
       )}

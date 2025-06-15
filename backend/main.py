@@ -1,10 +1,12 @@
-from fastapi import FastAPI, HTTPException, Request, Body
+from fastapi import FastAPI, Body, WebSocket, WebSocketDisconnect, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
+from controllers import auth_controller
+from controllers.auth_dependencies import get_current_user
 
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
@@ -12,7 +14,8 @@ if not GEMINI_API_KEY:
     raise ValueError("Gemini API key not found")
 
 chat_histories: Dict[str, List[Dict[str, Any]]] = {}
-ia_status = {}  # Novo: guarda se a IA está ligada/desligada por chat
+ia_status = {}
+websocket_connections: Set[WebSocket] = set()
 
 genai.configure(api_key=GEMINI_API_KEY)
 
@@ -47,6 +50,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_controller.router)
+
 class ChatRequest(BaseModel):
     chatId: str
     prompt: str
@@ -63,7 +68,25 @@ async def set_ia_status(chatId: str = Body(...), iaOn: bool = Body(...)):
 
 @app.get("/get-ia-status")
 async def get_ia_status(chatId: str):
-    return {"iaOn": ia_status.get(chatId, True)}  # Padrão: ligada
+    return {"iaOn": ia_status.get(chatId, True)}
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    websocket_connections.add(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        websocket_connections.remove(websocket)
+
+def notify_clients(message: dict):
+    for ws in list(websocket_connections):
+        try:
+            import asyncio
+            asyncio.create_task(ws.send_json(message))
+        except Exception:
+            pass
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
@@ -73,15 +96,17 @@ async def chat(req: ChatRequest):
     if not prompt:
         return {"error": "Prompt vazio."}
 
-    if chat_id not in chat_histories:
+    is_new_chat = chat_id not in chat_histories
+    if is_new_chat:
         chat_histories[chat_id] = []
+        notify_clients({"type": "new_chat", "chatId": chat_id})
 
     chat_histories[chat_id].append({
         "role": "user",
         "parts": [{"text": prompt}]
     })
+    notify_clients({"type": "new_message", "chatId": chat_id})
 
-    # Só responde se a IA estiver ligada
     if not ia_status.get(chat_id, True):
         return {"result": None}
 
@@ -92,13 +117,18 @@ async def chat(req: ChatRequest):
             "role": "model",
             "parts": [{"text": result}]
         })
+        notify_clients({"type": "new_message", "chatId": chat_id})
         return {"result": result}
     except Exception as e:
         print("Erro ao chamar Gemini:", e)
         return {"error": f"Erro ao chamar Gemini: {e}"}
 
+@app.get("/chats")
+async def list_chats(current_user: dict = Depends(get_current_user)):
+    return {"chats": list(chat_histories.keys())}
+
 @app.get("/history")
-async def get_history(chatId: str):
+async def get_history(chatId: str, current_user: dict = Depends(get_current_user)):
     return {"history": chat_histories.get(chatId, [])}
 
 class ManualReplyRequest(BaseModel):
@@ -113,14 +143,9 @@ async def manual_reply(req: ManualReplyRequest):
     if chat_id not in chat_histories:
         chat_histories[chat_id] = []
 
-    # Salva a mensagem como agente/admin
     chat_histories[chat_id].append({
         "role": "agent",
         "parts": [{"text": message}]
     })
 
     return {"status": "ok"}
-
-@app.get("/chats")
-async def list_chats():
-    return {"chats": list(chat_histories.keys())}
