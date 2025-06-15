@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Body
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Any
@@ -10,6 +10,9 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     raise ValueError("Gemini API key not found")
+
+chat_histories: Dict[str, List[Dict[str, Any]]] = {}
+ia_status = {}  # Novo: guarda se a IA está ligada/desligada por chat
 
 genai.configure(api_key=GEMINI_API_KEY)
 
@@ -45,6 +48,7 @@ app.add_middleware(
 )
 
 class ChatRequest(BaseModel):
+    chatId: str
     prompt: str
     history: List[Dict[str, Any]] = []
 
@@ -52,16 +56,71 @@ class ChatRequest(BaseModel):
 async def chat_options(request: Request):
     return {}
 
-@app.post("/chat")
-async def chat(request: ChatRequest):
-    try:
-        session = model.start_chat(history=request.history)
-        response = await session.send_message_async(request.prompt)
-        return {"result": response.text}
-    except Exception as e:
-        print(f"Gemini API error: {e}")
-        raise HTTPException(status_code=500, detail="An error occurred with the AI.")
+@app.post("/set-ia-status")
+async def set_ia_status(chatId: str = Body(...), iaOn: bool = Body(...)):
+    ia_status[chatId] = iaOn
+    return {"status": "ok", "iaOn": iaOn}
 
-@app.get("/")
-def read_root():
-    return {"status": "FastAPI Chat Server is running!"}
+@app.get("/get-ia-status")
+async def get_ia_status(chatId: str):
+    return {"iaOn": ia_status.get(chatId, True)}  # Padrão: ligada
+
+@app.post("/chat")
+async def chat(req: ChatRequest):
+    chat_id = req.chatId
+    prompt = req.prompt
+
+    if not prompt:
+        return {"error": "Prompt vazio."}
+
+    if chat_id not in chat_histories:
+        chat_histories[chat_id] = []
+
+    chat_histories[chat_id].append({
+        "role": "user",
+        "parts": [{"text": prompt}]
+    })
+
+    # Só responde se a IA estiver ligada
+    if not ia_status.get(chat_id, True):
+        return {"result": None}
+
+    try:
+        response = model.generate_content(prompt)
+        result = response.text
+        chat_histories[chat_id].append({
+            "role": "model",
+            "parts": [{"text": result}]
+        })
+        return {"result": result}
+    except Exception as e:
+        print("Erro ao chamar Gemini:", e)
+        return {"error": f"Erro ao chamar Gemini: {e}"}
+
+@app.get("/history")
+async def get_history(chatId: str):
+    return {"history": chat_histories.get(chatId, [])}
+
+class ManualReplyRequest(BaseModel):
+    chatId: str
+    message: str
+
+@app.post("/manual-reply")
+async def manual_reply(req: ManualReplyRequest):
+    chat_id = req.chatId
+    message = req.message
+
+    if chat_id not in chat_histories:
+        chat_histories[chat_id] = []
+
+    # Salva a mensagem como agente/admin
+    chat_histories[chat_id].append({
+        "role": "agent",
+        "parts": [{"text": message}]
+    })
+
+    return {"status": "ok"}
+
+@app.get("/chats")
+async def list_chats():
+    return {"chats": list(chat_histories.keys())}

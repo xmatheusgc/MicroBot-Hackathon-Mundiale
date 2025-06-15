@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-export function chatService() {
+export function chatService(activeChatId) {
   const [message, setMessage] = useState('');
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -14,8 +14,27 @@ export function chatService() {
     scrollToBottom();
   }, [history]);
 
+  useEffect(() => {
+    if (!activeChatId) return;
+
+    async function fetchHistory() {
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/history?chatId=${activeChatId}`);
+        const data = await res.json();
+        setHistory(data.history || []);
+      } catch (err) {
+        console.error("Erro ao carregar histórico:", err);
+      }
+    }
+    fetchHistory();
+
+    // Adicione este bloco para polling:
+    const interval = setInterval(fetchHistory, 2000);
+    return () => clearInterval(interval);
+  }, [activeChatId]);
+
   const handleSend = async () => {
-    if (!message.trim()) return;
+    if (!message.trim() || !activeChatId) return;
     setLoading(true);
 
     const userMessage = { role: 'user', parts: [{ text: message }] };
@@ -27,7 +46,7 @@ export function chatService() {
       const response = await fetch('http://127.0.0.1:8000/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: messageToSend, history }),
+        body: JSON.stringify({ chatId: activeChatId, prompt: messageToSend }),
       });
 
       const data = await response.json();
@@ -51,8 +70,9 @@ export function chatService() {
     message,
     setMessage,
     history,
+    setHistory,
     loading,
     handleSend,
-    messagesEndRef
+    messagesEndRef,
   };
 }
