@@ -18,26 +18,26 @@ export default function NavBar({ theme, toggleTheme, authChanged }) {
       </div>
       <div className="flex items-center gap-4">
         <ul className="nav-list flex gap-6 text-sm">
-          <li className="nav-item"><a href="/">Home</a></li>
+          <li className="nav-item"><a href="/">Inicio</a></li>
           {role === "usuario" && (
             <li className="nav-item"><a href="/chat">Chat</a></li>
           )}
           {(role === "admin" || role === "funcionario") && (
-            <li className="nav-item"><a href="/Dashboard">Dashboard</a></li>
+            <li className="nav-item"><a href="/Dashboard">Painel</a></li>
           )}
           {!role && (
             <>
-              <li className="nav-item"><a href="/login">Login</a></li>
-              <li className="nav-item"><a href="/register">Register</a></li>
+              <li className="nav-item"><a href="/login">Entrar</a></li>
+              <li className="nav-item"><a href="/register">Registre-se</a></li>
             </>
           )}
           {role && (
             <li className="nav-item">
-              <button onClick={() => {
+              <button className="cursor-pointer" onClick={() => {
                 localStorage.removeItem("token");
                 window.location.href = "/";
               }}>
-                Logout
+                Sair
               </button>
             </li>
           )}
@@ -52,9 +52,6 @@ export default function NavBar({ theme, toggleTheme, authChanged }) {
           />
           <div className="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
         </label>
-        <span className="bg-surface rounded-lg">
-          <CircleUserRound size={25} />
-        </span>
       </div>  
     </nav>
   );

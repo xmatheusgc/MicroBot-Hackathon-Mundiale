@@ -15,3 +15,4 @@ class ChatDB(Base):
 
     user = relationship("UserDB", back_populates="chats")
     messages = relationship("MessageDB", back_populates="chat")
+    feedbacks = relationship("FeedbackDB", back_populates="chat")

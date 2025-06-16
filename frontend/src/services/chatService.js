@@ -16,6 +16,13 @@ export function chatService(activeChatId, setActiveChatId) {
     if (!activeChatId) return;
     try {
       const res = await authFetch(`http://127.0.0.1:8000/history?chatId=${activeChatId}`);
+      if (res.status === 404) {
+        setActiveChatId && setActiveChatId(null);
+        localStorage.removeItem("activeChatId");
+        setHistory([]);
+        alert("Este chat foi encerrado por inatividade.");
+        return;
+      }
       const data = await res.json();
       setHistory(data.history || []);
     } catch (err) {

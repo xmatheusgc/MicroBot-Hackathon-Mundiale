@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { chatService } from '../services/chatService';
-import { Paperclip, Bot, Pin, Power, SquareUser } from "lucide-react";
+import { Paperclip, Bot, SquareUser } from "lucide-react";
 import { useWebSocket } from "../services/useWebSocket";
+import { authFetch } from '../services/authFetch';
 
 export default function AdminChatComponent({ activeChatId }) {
   const [iaOn, setIaOn] = useState(true);
@@ -18,7 +19,7 @@ export default function AdminChatComponent({ activeChatId }) {
 
   useEffect(() => {
     if (!activeChatId) return;
-    fetch(`http://127.0.0.1:8000/get-ia-status?chatId=${activeChatId}`)
+    authFetch(`http://127.0.0.1:8000/get-ia-status?chatId=${activeChatId}`)
       .then(res => res.json())
       .then(data => setIaOn(data.iaOn));
   }, [activeChatId]);
@@ -27,7 +28,7 @@ export default function AdminChatComponent({ activeChatId }) {
     if (!activeChatId) return;
     const novoStatus = !iaOn;
     setIaOn(novoStatus);
-    await fetch('http://127.0.0.1:8000/set-ia-status', {
+    await authFetch('http://127.0.0.1:8000/set-ia-status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ chatId: activeChatId, iaOn: novoStatus }),
@@ -38,7 +39,7 @@ export default function AdminChatComponent({ activeChatId }) {
     if (!message.trim() || loading) return;
 
     try {
-      await fetch('http://127.0.0.1:8000/manual-reply', {
+      await authFetch('http://127.0.0.1:8000/manual-reply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chatId: activeChatId, message }),
@@ -69,14 +70,6 @@ export default function AdminChatComponent({ activeChatId }) {
   return (
     <section className="flex flex-col justify-between grow-1 rounded-3xl bg-surface shadow-2xl px-4 py-2 h-full max-w-1/3 min-w-[420px] max-h-[799px]">
       <div className="flex justify-start mb-4">
-        <button 
-          className="ml-2 px-4 py-3 bg-red text-white font-semibold rounded-4xl hover:bg-[#555] transition disabled:bg-gray-400 cursor-pointer">
-            <Power size={20}/>
-        </button>
-        <button 
-          className="ml-2 px-4 py-3 bg-purple text-white font-semibold rounded-4xl hover:bg-[#555] transition disabled:bg-gray-400 cursor-pointer">
-            <Pin size={20}/>
-        </button>
         <button
           onClick={toggleIa}
           className={`px-4 ml-2 py-2 rounded-4xl font-semibold shadow transition cursor-pointer
@@ -84,7 +77,7 @@ export default function AdminChatComponent({ activeChatId }) {
             IA {iaOn ? "Ligada" : "Desligada"}
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto mb-4 space-y-4 border rounded-3xl border-color max-h-[680px] px-4 py-2">
+      <div className="flex-1 overflow-y-auto mb-4 space-y-4 border rounded-3xl border-color max-h-[680px] overflow-x-hidden px-4 py-2">
         {history.map((msg, index) => {
           if (msg.role === "model") {
             return (
@@ -121,7 +114,7 @@ export default function AdminChatComponent({ activeChatId }) {
 
           return (
             <div key={index} className="flex justify-start">
-              <div className="my-2 p-3 rounded-xl max-w-[70%] break-words shadow-lg bg-purple text-white max-w-1/2">
+              <div className="my-2 p-3 rounded-xl break-words shadow-lg bg-purple text-white max-w-1/2">
                 {msg.parts[0].text}
               </div>
             </div>

@@ -5,6 +5,7 @@ from models.base import Base
 from models.user_db import UserDB
 from models.chat_db import ChatDB
 from models.message_db import MessageDB 
+from models.feedback_db import FeedbackDB
 import os
 from dotenv import load_dotenv
 

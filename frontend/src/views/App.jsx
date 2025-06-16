@@ -5,9 +5,9 @@ import { Navigate } from "react-router-dom";
 import NavBar from '../components/NavBar.jsx'
 import Home from './public/Home.jsx'
 import Dashboard from './admin/Dashboard.jsx'
-import ClientChat from './public/ClientChat.jsx'
 import Login from './public/Login.jsx'
 import Register from './public/Register.jsx'
+import UserChatWindow from './public/UserChatWindow.jsx'
 import { getUserRole } from '../services/auth.js';
 
 export default function App() {
@@ -53,16 +53,17 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/chat" element={
           <RoleProtectedRoute allowedRoles={["usuario"]}>
-            <ClientChat />
+            <UserChatWindow />
           </RoleProtectedRoute>
         } />
-        <Route path="/Dashboard" element={
+        <Route path="/dashboard" element={
           <RoleProtectedRoute allowedRoles={["admin", "funcionario"]}>
             <Dashboard />
           </RoleProtectedRoute>
         } />
         <Route path="/login" element={<Login onLogin={() => setAuthChanged(c => c + 1)} />} />
         <Route path="/register" element={<Register onRegister={() => setAuthChanged(c => c + 1)} />} />
+        <Route path="/user-chat-window" element={<UserChatWindow />} />
       </Routes>
     </main>
   );
