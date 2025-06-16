@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useWebSocket } from './useWebSocket';
 import { authFetch } from './authFetch';
 
-export function chatService(activeChatId) {
+export function chatService(activeChatId, setActiveChatId) {
   const [message, setMessage] = useState('');
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -12,7 +12,6 @@ export function chatService(activeChatId) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Busca o histórico do chat
   const fetchHistory = async () => {
     if (!activeChatId) return;
     try {
@@ -31,10 +30,8 @@ export function chatService(activeChatId) {
   useEffect(() => {
     if (!activeChatId) return;
     fetchHistory();
-    // Removido o setInterval (polling)
   }, [activeChatId]);
 
-  // Atualiza histórico em tempo real via WebSocket
   useWebSocket((data) => {
     if (data.type === "new_message" && data.chatId === activeChatId) {
       fetchHistory();
@@ -42,7 +39,7 @@ export function chatService(activeChatId) {
   });
 
   const handleSend = async () => {
-    if (!message.trim() || !activeChatId) return;
+    if (!message.trim()) return;
     setLoading(true);
 
     const userMessage = { role: 'user', parts: [{ text: message }] };
@@ -51,13 +48,22 @@ export function chatService(activeChatId) {
     setMessage('');
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/chat', {
+      const response = await authFetch('http://127.0.0.1:8000/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chatId: activeChatId, prompt: messageToSend }),
+        body: JSON.stringify({ 
+          chatId: activeChatId || "", 
+          prompt: messageToSend, 
+          history: [] 
+        }),      
       });
 
       const data = await response.json();
+
+      if (data.chatId && setActiveChatId && (!activeChatId || data.chatId !== activeChatId)) {
+        setActiveChatId(data.chatId);
+      }
+
       const modelResponse = {
         role: 'model',
         parts: [{ text: data.result || data.error || "Não recebi uma resposta válida." }],
@@ -82,6 +88,6 @@ export function chatService(activeChatId) {
     loading,
     handleSend,
     messagesEndRef,
-    fetchHistory, // exporta para uso externo (AdminChatComponent)
+    fetchHistory,
   };
 }

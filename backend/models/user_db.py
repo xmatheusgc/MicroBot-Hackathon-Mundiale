@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
+from sqlalchemy.orm import relationship
+from models.base import Base
 
 class UserDB(Base):
     __tablename__ = "users"
@@ -10,3 +9,4 @@ class UserDB(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     role = Column(String, default="usuario")
+    chats = relationship("ChatDB", back_populates="user")

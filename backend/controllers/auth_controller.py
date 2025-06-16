@@ -9,9 +9,9 @@ from models.user import User
 from models.user_db import UserDB
 import os
 
-SECRET_KEY = os.getenv("SECRET_KEY", "sua_chave_secreta")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+SECRET_KEY = os.getenv("SECRET_KEY", "SECRET_KEY_PLACEHOLDER")
+ALGORITHM = os.getenv("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
