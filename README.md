@@ -1,32 +1,66 @@
-# 🤖 Microbot – Copiloto de Atendimento com IA
+# 🤖 MicroBot – Copiloto de Atendimento com IA
 
-Um assistente de inteligência artificial que oferece suporte em tempo real ao atendente humano durante o atendimento ao cliente.
-
-## Objetivo
-
-O SmartAssist não substitui o atendente. Ele auxilia com sugestões, resumos e análises inteligentes para tornar o atendimento mais rápido e eficiente.
+MicroBot é um assistente de inteligência artificial que oferece suporte em tempo real ao atendente humano durante o atendimento ao cliente, além de permitir o autoatendimento para clientes finais.
 
 ## Funcionalidades
 
-- ✅ **Sugestão de Respostas**  
-  Propõe respostas com base na conversa em tempo real.
+- **Chat Cliente:**  
+  Interface para clientes conversarem com o MicroBot, com sugestões rápidas e envio de mensagens.
 
-- ✅ **Resumo Automático de Conversas**  
-  Gera resumos para facilitar retomadas ou transferências.
+- **Painel do Funcionário/Admin:**  
+  Visualização de todos os chats abertos, fixação de chats importantes, acompanhamento em tempo real e envio de respostas manuais.
 
-- ✅ **Análise de Sentimento**  
-  Detecta o tom emocional do cliente (satisfeito, neutro ou irritado).
+- **IA Ligável/Desligável:**  
+  Funcionário pode ativar ou desativar a IA para cada chat.
 
-- ✅ **Automação de Tarefas Repetitivas**  
-  Reduz o esforço com atividades mecânicas.
+- **Histórico de Conversa:**  
+  Todo o histórico do chat é salvo e pode ser consultado tanto pelo cliente quanto pelo funcionário/admin.
 
-## 💡 Proposta
+- **Avaliação de Atendimento:**  
+  O cliente pode avaliar o atendimento ao finalizar o chat.
 
-Interface de chat simples com as funções implementadas em versão básica, demonstrando como a IA pode otimizar o tempo e a qualidade do atendimento humano.
+- **Estatísticas do Painel:**  
+  Exibe número de chats abertos, resolvidos e iniciados nas últimas 24h.
 
-## 🧰 Tecnologias
+- **Autenticação e Controle de Acesso:**  
+  Cadastro, login e controle de acesso por papel (usuário, funcionário, admin).
 
-- Python
-- React
-- Node.js
-- Tailwind CSS
+- **Responsividade:**  
+  Interfaces adaptadas para desktop e dispositivos móveis, com menu dropdown na navegação.
+
+## Tecnologias
+
+- **Backend:** Python, FastAPI, SQLAlchemy, Google Generative AI, JWT, SQLite
+- **Frontend:** React, Vite, Tailwind CSS, Lucide Icons
+- **Outros:** WebSockets, dotenv, email-validator
+
+## Como rodar o projeto
+
+### Backend
+
+1. Instale as dependências:
+   ```
+   pip install -r requirements.txt
+   ```
+2. Configure as variáveis de ambiente em `.env` (veja `.env.example`).
+3. Inicie o servidor:
+   ```
+   uvicorn main:app --reload
+   ```
+
+### Frontend
+
+1. Instale as dependências:
+   ```
+   npm install
+   ```
+2. Inicie o frontend:
+   ```
+   npm run dev
+   ```
+
+Acesse o frontend em [http://localhost:5173](http://localhost:5173).
+
+---
+
+Desenvolvido para o Hackathon Mundiale • by LLMakers
