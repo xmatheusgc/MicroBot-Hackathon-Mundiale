@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Paperclip, Mic, Bot, SquareUser, Send, Ellipsis } from "lucide-react";
+import { Paperclip, Mic, Bot, SquareUser, Send, Ellipsis, MessageCircleOff } from "lucide-react";
 import { chatService } from "../../services/chatService.js";
 import { authFetch } from "../../services/authFetch.js";
 
@@ -102,18 +102,15 @@ export default function ClientChat() {
   );
 
   return (
-    <div className="flex flex-col h-screen w-full bg-color text-[#e5e5e5] relative">
-      {history.length > 2 && (
-        <button
-          className="absolute top-8 right-8 z-50 bg-red text-white px-4 py-2 rounded-3xl shadow-lg hover:bg-[#555] transition cursor-pointer"
-          onClick={handleEndChat}
-        >
-          Encerrar atendimento
-        </button>
-      )}
-
+    <div className="flex flex-col h-screen w-full bg-color text-[#e5e5e5]">
       <div className="flex flex-col flex-grow items-center px-4 py-6 overflow-y-auto">
-        <div className="bg-surface h-full rounded-4xl px-6 py-4 w-full max-w-[800px] overflow-y-auto space-y-4 max-h-[645px] shadow-2xl">
+        <div className="relative bg-surface h-full rounded-4xl px-6 py-4 w-full max-w-[800px] overflow-y-auto space-y-4 max-h-[645px] shadow-2xl">
+          <button
+            className="flex items-center justify-center gap-2 absolute text-xs top-6 left-6 z-50 bg-red text-white px-4 py-2 rounded-3xl shadow-lg hover:bg-[#555] transition cursor-pointer"
+            onClick={handleEndChat}
+          >
+            <MessageCircleOff size={18} /> Encerrar chat
+          </button>
           {history.map((msg, index) => {
             if (msg.role === "model") {
               return (
@@ -188,7 +185,7 @@ export default function ClientChat() {
           </div>
 
           <div
-            className="w-9 h-9 flex items-center justify-center rounded-full text-purple transition cursor-pointer shadow-[0_-1px_7px_rgba(0,0,0,0.1)] hover:bg-[#737FEB] hover:!text-white"
+            className="hidden sm:flex w-9 h-9 flex items-center justify-center rounded-full text-purple transition cursor-pointer shadow-[0_-1px_7px_rgba(0,0,0,0.1)] hover:bg-[#737FEB] hover:!text-white"
             title="Ditar"
           >
             <Mic size={18} />
