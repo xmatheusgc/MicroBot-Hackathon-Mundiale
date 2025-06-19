@@ -146,7 +146,8 @@ export default function Home() {
           MicroBot
         </h1>
         <p className="text-lg text-color mb-2 text-center max-w-2xl">
-          Assistente virtual para autoatendimento de clientes e suporte inteligente ao atendente humano.
+          Assistente virtual para autoatendimento de clientes e suporte
+          inteligente ao atendente humano.
         </p>
         <div className="text-xs text-color-secondary text-center">
           Desenvolvido para o Hackathon Mundiale • by LLMakers
@@ -161,7 +162,10 @@ export default function Home() {
         <h2 className="text-xl font-bold text-purple">Funcionalidades</h2>
         <div className="flex flex-row flex-wrap justify-center gap-6 max-w-3xl w-full mb-8 min-w-4/5 p-12">
           {features.map((f, i) => (
-            <div key={i} className="flex items-start gap-3 bg-surface rounded-2xl p-4 shadow min-w-[330px] max-w-1/3">
+            <div
+              key={i}
+              className="feature-card flex items-start gap-3 bg-surface rounded-2xl p-4 shadow min-w-[330px] max-w-1/3"
+            >
               <div>{f.icon}</div>
               <div>
                 <div className="font-semibold text-color mb-1">{f.title}</div>
@@ -212,7 +216,8 @@ export default function Home() {
         )}
       </section>
       <footer className="w-full py-4 bg-surface text-center text-xs text-color-secondary mt-12">
-        &copy; {new Date().getFullYear()} MicroBot. Todos os direitos reservados.
+        &copy; {new Date().getFullYear()} MicroBot. Todos os direitos
+        reservados.
       </footer>
     </div>
   );

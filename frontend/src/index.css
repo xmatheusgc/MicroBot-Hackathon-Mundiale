@@ -10,14 +10,18 @@
     color: var(--color-text);
   }
 
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     scrollbar-color: var(--border-color) transparent;
   }
 
-  html, body, #root {
+  html,
+  body,
+  #root {
     height: 100dvh;
     width: 100%;
     margin: 0;
@@ -33,5 +37,22 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+  }
+
+  .feature-card {
+    position: relative;
+    transition: transform 0.5s;
+    will-change: transform;
+    overflow: hidden;
+  }
+
+  .feature-card:hover {
+    transform: scale(1.05);
+    background: linear-gradient(
+      90deg,
+      rgba(115, 127, 235, 0.10) 25%,
+      rgba(115, 127, 235, 0.10) 50%,
+      rgba(115, 127, 235, 0.10) 75%
+    );
   }
 }
