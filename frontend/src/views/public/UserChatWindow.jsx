@@ -1,13 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { Paperclip, Mic, Bot, SquareUser, Send, Ellipsis, MessageCircleOff } from "lucide-react";
+import {
+  Paperclip,
+  Mic,
+  Bot,
+  SquareUser,
+  Square,
+  Send,
+  Ellipsis,
+  MessageCircleOff,
+} from "lucide-react";
 import { chatService } from "../../services/chatService.js";
 import { authFetch } from "../../services/authFetch.js";
+import { useSpeechToText } from "../../hooks/useSpeechToText.jsx";
 
 export default function ClientChat() {
-  const [activeChatId, setActiveChatId] = useState(() => localStorage.getItem("activeChatId") || null);
+  const [activeChatId, setActiveChatId] = useState(
+    () => localStorage.getItem("activeChatId") || null
+  );
   const [showFeedback, setShowFeedback] = useState(false);
   const [rating, setRating] = useState(0);
   const [lastChatId, setLastChatId] = useState(null);
+  const [micActive, setMicActive] = useState(false);
   const {
     message,
     setMessage,
@@ -15,8 +28,15 @@ export default function ClientChat() {
     setHistory,
     loading,
     handleSend,
-    messagesEndRef
+    messagesEndRef,
   } = chatService(activeChatId, setActiveChatId);
+
+  const { start, stop, listening } = useSpeechToText({
+    onResult: (text) => {
+      setMessage((prev) => prev + (prev ? " " : "") + text);
+      setMicActive(false);
+    },
+  });
 
   useEffect(() => {
     if (activeChatId) {
@@ -25,7 +45,7 @@ export default function ClientChat() {
   }, [activeChatId]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [history]);
 
   const handleFileClick = () => {
@@ -40,17 +60,17 @@ export default function ClientChat() {
   };
 
   const handleEndChat = async () => {
-    const closingChatId = activeChatId; 
-    setLastChatId(closingChatId); 
-    await authFetch('http://127.0.0.1:8000/close-chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const closingChatId = activeChatId;
+    setLastChatId(closingChatId);
+    await authFetch("http://127.0.0.1:8000/close-chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chatId: closingChatId }),
     });
     setActiveChatId(null);
     localStorage.removeItem("activeChatId");
     setShowFeedback(true);
-    setHistory([]); 
+    setHistory([]);
   };
 
   const sugestoes = [
@@ -67,15 +87,21 @@ export default function ClientChat() {
       style={{ backdropFilter: "blur(2px)" }}
     >
       <div className="bg-surface rounded-3xl p-8 shadow-2xl flex flex-col items-center min-w-[320px]">
-        <p className="mb-4 text-color text-lg font-semibold">Como foi seu atendimento?</p>
+        <p className="mb-4 text-color text-lg font-semibold">
+          Como foi seu atendimento?
+        </p>
         <div className="flex gap-2 mb-4">
-          {[1,2,3,4,5].map(n => (
+          {[1, 2, 3, 4, 5].map((n) => (
             <button
               key={n}
-              className={`text-3xl cursor-pointer ${rating >= n ? "text-yellow-400" : "text-gray-400"}`}
+              className={`text-3xl cursor-pointer ${
+                rating >= n ? "text-yellow-400" : "text-gray-400"
+              }`}
               onClick={() => setRating(n)}
               aria-label={`Avaliação ${n} estrela${n > 1 ? "s" : ""}`}
-            >★</button>
+            >
+              ★
+            </button>
           ))}
         </div>
         <button
@@ -85,13 +111,13 @@ export default function ClientChat() {
               alert("Erro interno: chatId não encontrado para avaliação.");
               return;
             }
-            await authFetch('http://127.0.0.1:8000/feedback', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+            await authFetch("http://127.0.0.1:8000/feedback", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ chatId: lastChatId, rating }),
             });
             setShowFeedback(false);
-            setHistory([]); 
+            setHistory([]);
           }}
           disabled={rating === 0}
         >
@@ -133,7 +159,7 @@ export default function ClientChat() {
               return (
                 <div key={index} className="flex items-start">
                   <div className="mr-3 text-[32px] shrink-0 text-green-600">
-                    <SquareUser size={30}/>
+                    <SquareUser size={30} />
                   </div>
                   <div className="bg-green-100 px-6 py-4 rounded-3xl shadow-2xl text-green-900 max-w-1/2">
                     {msg.parts[0].text.split("\n").map((line, i) => (
@@ -147,10 +173,7 @@ export default function ClientChat() {
             }
 
             return (
-              <div
-                key={index}
-                className="flex justify-end"
-              >
+              <div key={index} className="flex justify-end">
                 <div className="my-2 p-3 rounded-xl max-w-[70%] break-words shadow-lg bg-purple text-white max-w-1/2">
                   {msg.parts[0].text}
                 </div>
@@ -185,10 +208,27 @@ export default function ClientChat() {
           </div>
 
           <div
-            className="hidden sm:flex w-9 h-9 flex items-center justify-center rounded-full text-purple transition cursor-pointer shadow-[0_-1px_7px_rgba(0,0,0,0.1)] hover:bg-[#737FEB] hover:!text-white"
-            title="Ditar"
+            className={`hidden sm:flex w-9 h-9 flex items-center justify-center rounded-full text-purple transition cursor-pointer shadow-[0_-1px_7px_rgba(0,0,0,0.1)] ${
+              listening
+                ? "bg-[#737FEB] text-white animate-pulse"
+                : "hover:bg-[#737FEB] hover:!text-white"
+            }`}
+            title={listening ? "Gravando..." : "Ditar"}
+            onClick={() => {
+              if (listening) {
+                stop();
+                setMicActive(false);
+              } else {
+                start();
+                setMicActive(true);
+              }
+            }}
           >
-            <Mic size={18} />
+            {listening ? (
+              <Square size={18} className="text-color" />
+            ) : (
+              <Mic size={18} />
+            )}
           </div>
         </div>
 
@@ -207,11 +247,11 @@ export default function ClientChat() {
           disabled={loading || !message.trim()}
           className="flex justify-center align-center px-5 py-3 bg-purple text-white font-semibold rounded-4xl hover:bg-[#555] transition disabled:bg-gray-400 cursor-pointer"
         >
-          {loading ? <Ellipsis size={20}/> : <Send size={20}/>}
+          {loading ? <Ellipsis size={20} /> : <Send size={20} />}
         </button>
       </form>
       <div className="flex gap-2 justify-center m-2 mb-6 overflow-x-auto hidden sm:flex">
-        {sugestoes.map((s, i) => ( 
+        {sugestoes.map((s, i) => (
           <button
             key={i}
             type="button"
