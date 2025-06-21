@@ -25,7 +25,7 @@ function TechCarousel3D() {
   return (
     <div className="w-full flex flex-col items-center mb-10">
       <h2 className="text-xl font-bold text-purple mb-4">Tecnologias Utilizadas</h2>
-      <div className="relative w-full max-w-[450px] h-[250px] flex items-center justify-center select-none overflow-hidden">
+      <div className="relative w-full max-w-[500px] h-[250px] flex items-center justify-center select-none overflow-hidden">
         {techImages.map((tech, i) => {
           const total = techImages.length;
           let pos = "hidden";
@@ -66,27 +66,37 @@ function TechCarousel3D() {
           }
 
           return (
-            <img
+            <div
               key={tech.name}
-              src={tech.src}
-              alt={tech.name}
-              className={`absolute transition-all duration-700 rounded-2xl shadow-lg bg-surface p-4 ${blur}`}
+              className={`absolute flex items-center justify-center bg-surface rounded-2xl shadow-lg p-4 transition-all duration-700 ${blur}`}
               style={{
-                maxWidth: "220px",
-                maxHeight: "120px",
-                width: "auto",
-                height: "auto",
-                objectFit: "contain",
+                width: "250px",
+                height: "150px",
                 left: "50%",
                 top: "50%",
                 transform: `translate(-50%, -50%) translateX(${translateX}px) scale(${scale})`,
                 zIndex: z,
                 opacity: opacity,
                 pointerEvents: pos === "hidden" ? "none" : "auto",
-                boxShadow: pos === "center" ? "0 8px 32px 0 rgba(80,80,160,0.18)" : "0 2px 8px 0 rgba(80,80,160,0.08)",
-                border: pos === "center" ? "3px solid #737FEB" : "1px solid #eee",
+                boxShadow: pos === "center"
+                  ? "0 8px 32px 0 rgba(80,80,160,0.18)"
+                  : "0 2px 8px 0 rgba(80,80,160,0.08)",
+                border: pos === "center"
+                  ? "3px solid #737FEB"
+                  : "1px solid #eee",
               }}
-            />
+            >
+              <img
+                src={tech.src}
+                alt={tech.name}
+                className="w-full h-full object-contain"
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  display: "block",
+                }}
+              />
+            </div>
           );
         })}
       </div>
@@ -139,9 +149,22 @@ export default function Home() {
     },
   ];
 
+    const organization = [
+    {
+      image: "./../images/mundiale.png",
+      title: "Mundilae",
+      site: "https://www.mundiale.ai/",
+    },
+    {
+      image: "./../images/cotemig.png",
+      title: "Faculdade Cotemig",
+      site: "https://www.cotemig.com.br/",
+    }
+  ];
+
   return (
     <div className="w-full min-h-screen bg-color flex flex-col items-center">
-      <header className="w-2/3 px-6 py-12 my-8 rounded-2xl bg-surface shadow-md flex flex-col items-center">
+      <header className="w-full px-6 py-50 my-12 bg-surface shadow-md flex flex-col items-center">
         <h1 className="font-bold text-4xl text-purple mb-2 text-center">
           MicroBot
         </h1>
@@ -158,13 +181,13 @@ export default function Home() {
         <TechCarousel3D />
       </section>
 
-      <section className="w-full flex flex-col items-center px-2 sm:px-0 mt-8">
+      <section className="w-full bg-surface py-12 flex flex-col items-center px-2 sm:px-0 mt-8">
         <h2 className="text-xl font-bold text-purple">Funcionalidades</h2>
         <div className="flex flex-row flex-wrap justify-center gap-6 max-w-3xl w-full mb-8 min-w-4/5 p-12">
           {features.map((f, i) => (
             <div
               key={i}
-              className="feature-card flex items-start gap-3 bg-surface rounded-2xl p-4 shadow min-w-[330px] max-w-1/3"
+              className="flex items-start gap-3 bg-surface rounded-2xl p-4 shadow-lg min-w-[330px] max-w-1/3 h-32 border border-color transition-all duration-300 hover:border-purple hover:shadow-xl cursor-pointer hover:scale-105 input-color-hover"
             >
               <div>{f.icon}</div>
               <div>
@@ -176,7 +199,29 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full flex flex-col items-center mb-12 p-6">
+      <section className="w-full py-12 flex flex-col items-center px-2 sm:px-0 mt-8">
+        <h2 className="text-xl font-bold text-purple">Organização</h2>
+        <div className="flex flex-row flex-wrap justify-center gap-6 max-w-xl w-full mb-8 min-w-4/5 p-12">
+          {organization.map((o, i) => (
+            <a
+              key={i}
+              href={o.site}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center justify-center bg-surface rounded-2xl p-6 shadow-lg min-w-[330px] max-w-1/3 border border-color transition-all duration-300 hover:border-purple hover:shadow-xl cursor-pointer hover:scale-105 input-color-hover"
+            >
+              <img
+                src={o.image}
+                alt={o.title}
+                className="w-64 h-64 object-contain rounded-xl mb-2"
+              />
+              <div className="font-semibold text-color text-center">{o.title}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section className="w-full flex flex-col items-center mt-4 mb-24 p-6">
         {!role && (
           <div className="text-center">
             <p className="mb-2">
@@ -215,7 +260,7 @@ export default function Home() {
           </div>
         )}
       </section>
-      <footer className="w-full py-4 bg-surface text-center text-xs text-color-secondary mt-12">
+      <footer className="w-full py-4 bg-surface text-center text-xs text-color-secondary">
         &copy; {new Date().getFullYear()} MicroBot. Todos os direitos
         reservados.
       </footer>

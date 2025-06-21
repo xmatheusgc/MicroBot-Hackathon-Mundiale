@@ -130,57 +130,61 @@ export default function ClientChat() {
   return (
     <div className="flex flex-col h-screen w-full bg-color text-[#e5e5e5]">
       <div className="flex flex-col flex-grow items-center px-4 py-6 overflow-y-auto">
-        <div className="relative bg-surface h-full rounded-4xl px-6 py-4 w-full max-w-[800px] overflow-y-auto space-y-4 max-h-[645px] shadow-2xl">
-          <button
-            className="flex items-center justify-center gap-2 absolute text-xs top-6 left-6 z-50 bg-red text-white px-4 py-2 rounded-3xl shadow-lg hover:bg-[#555] transition cursor-pointer"
-            onClick={handleEndChat}
-          >
-            <MessageCircleOff size={18} /> Encerrar chat
-          </button>
-          {history.map((msg, index) => {
-            if (msg.role === "model") {
-              return (
-                <div key={index} className="flex items-start">
-                  <div className="mr-3 text-[32px] shrink-0 text-purple">
-                    <Bot size={32} />
+        <div className="relative bg-surface rounded-4xl px-6 py-4 w-full max-w-[800px] h-full max-h-1/1 overflow-y-auto space-y-4 shadow-2xl">
+          <div>
+            {history.length >= 1 && (
+              <button
+                className="flex items-center justify-center gap-2 sticky text-xs top-6 left-6 z-50 bg-red text-white px-4 py-2 rounded-3xl shadow-lg hover:bg-[#555] transition cursor-pointer"
+                onClick={handleEndChat}
+              >
+                <MessageCircleOff size={18} /> Encerrar chat
+              </button>
+            )}
+            {history.map((msg, index) => {
+              if (msg.role === "model") {
+                return (
+                  <div key={index} className="flex items-start">
+                    <div className="mr-3 text-[32px] shrink-0 text-purple">
+                      <Bot size={32} />
+                    </div>
+                    <div className="bg-surface px-6 py-4 rounded-3xl shadow-2xl input-color max-w-1/2">
+                      {msg.parts[0].text.split("\n").map((line, i) => (
+                        <p key={i} className="leading-relaxed text-color mb-2">
+                          {line}
+                        </p>
+                      ))}
+                    </div>
                   </div>
-                  <div className="bg-surface px-6 py-4 rounded-3xl shadow-2xl input-color max-w-1/2">
-                    {msg.parts[0].text.split("\n").map((line, i) => (
-                      <p key={i} className="leading-relaxed text-color mb-2">
-                        {line}
-                      </p>
-                    ))}
+                );
+              }
+
+              if (msg.role === "agent") {
+                return (
+                  <div key={index} className="flex items-start">
+                    <div className="mr-3 text-[32px] shrink-0 text-green-600">
+                      <SquareUser size={30} />
+                    </div>
+                    <div className="bg-green-100 px-6 py-4 rounded-3xl shadow-2xl text-green-900 max-w-1/2">
+                      {msg.parts[0].text.split("\n").map((line, i) => (
+                        <p key={i} className="leading-relaxed mb-2">
+                          {line}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div key={index} className="flex justify-end">
+                  <div className="my-2 p-3 rounded-xl max-w-[70%] break-words shadow-lg bg-purple text-white max-w-1/2">
+                    {msg.parts[0].text}
                   </div>
                 </div>
               );
-            }
-
-            if (msg.role === "agent") {
-              return (
-                <div key={index} className="flex items-start">
-                  <div className="mr-3 text-[32px] shrink-0 text-green-600">
-                    <SquareUser size={30} />
-                  </div>
-                  <div className="bg-green-100 px-6 py-4 rounded-3xl shadow-2xl text-green-900 max-w-1/2">
-                    {msg.parts[0].text.split("\n").map((line, i) => (
-                      <p key={i} className="leading-relaxed mb-2">
-                        {line}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              );
-            }
-
-            return (
-              <div key={index} className="flex justify-end">
-                <div className="my-2 p-3 rounded-xl max-w-[70%] break-words shadow-lg bg-purple text-white max-w-1/2">
-                  {msg.parts[0].text}
-                </div>
-              </div>
-            );
-          })}
-          <div ref={messagesEndRef} />
+            })}
+            <div ref={messagesEndRef} />
+          </div>
         </div>
       </div>
 

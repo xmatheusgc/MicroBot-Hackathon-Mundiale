@@ -43,4 +43,6 @@ html.dark {
 .border-green { border-color: var(--color-green); }
 
 .input-color { background-color: var(--color-input); }
+.input-color-hover:hover { background-color: var(--color-input); }
+
 .border-color { border-color: var(--border-color);}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CircleUserRound, Menu, X } from "lucide-react";
+import { CircleUserRound, Menu, X, Sun, Moon } from "lucide-react"; // adicione Sun e Moon
 import { getUserRole } from "../services/auth";
 
 export default function NavBar({ theme, toggleTheme, authChanged }) {
@@ -49,16 +49,17 @@ export default function NavBar({ theme, toggleTheme, authChanged }) {
         <ul className="nav-list flex gap-6 text-sm">
           {navLinks}
         </ul>
-        <label className="inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            value=""
-            className="sr-only peer"
-            defaultChecked={theme === "dark"}
-            onChange={toggleTheme}
-          />
-          <div className="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
-        </label>
+        <button
+          onClick={toggleTheme}
+          className="ml-2 p-2 rounded-full transition-colors cursor-pointer input-color-hover"
+          aria-label="Alternar tema"
+        >
+          {theme === "dark" ? (
+            <Sun size={22} />
+          ) : (
+            <Moon size={22} />
+          )}
+        </button>
       </div>
       <div className="sm:hidden flex items-center">
         <button onClick={() => setMenuOpen(!menuOpen)} className="p-2">
@@ -70,16 +71,17 @@ export default function NavBar({ theme, toggleTheme, authChanged }) {
           <ul className="flex flex-col gap-4 text-sm">
             {navLinks}
           </ul>
-          <label className="inline-flex items-center cursor-pointer mt-2">
-            <input
-              type="checkbox"
-              value=""
-              className="sr-only peer"
-              defaultChecked={theme === "dark"}
-              onChange={toggleTheme}
-            />
-            <div className="relative w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
-          </label>
+          <button
+            onClick={toggleTheme}
+            className="mt-2 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors self-start"
+            aria-label="Alternar tema"
+          >
+            {theme === "dark" ? (
+              <Sun size={22} />
+            ) : (
+              <Moon size={22} />
+            )}
+          </button>
         </div>
       )}
     </nav>
